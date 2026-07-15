@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LoneStar Billing — Landlord Portal</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:13px;background:#f4f4f0;color:#1a1a1a}
+:root{--border:#e0ddd6;--surface-0:#f4f4f0;--surface-1:#f0ede8;--surface-2:#fff;--text-primary:#1a1a1a;--text-secondary:#666;--text-muted:#aaa;--bg-accent:#eef3fb;--radius:8px}
+.wrap{background:#f4f4f0;min-height:100vh}
+.topbar{background:#0D1B2A;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #C9A84C}
+.tbar-l{display:flex;align-items:center;gap:10px}
+.tbar-brand{font-size:13px;font-weight:500;color:#fff}
+.tbar-sub{font-size:10px;color:#C9A84C;letter-spacing:.07em;text-transform:uppercase;display:block}
+.tbar-r{display:flex;align-items:center;gap:14px}
+.tbar-prop{font-size:12px;color:#9AA5B1;display:flex;align-items:center;gap:5px}
+.tbar-user{display:flex;align-items:center;gap:6px;font-size:12px;color:#9AA5B1}
+.avatar{width:28px;height:28px;border-radius:50%;background:#1A3A5C;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:#C9A84C}
+.nav{background:#162236;padding:0 20px;display:flex;gap:0;border-bottom:1px solid #1E3348}
+.nav-item{padding:10px 14px;font-size:12px;color:#6B7A8D;cursor:pointer;border-bottom:2px solid transparent}
+.nav-item.active{color:#C9A84C;border-bottom-color:#C9A84C}
+.body{display:grid;grid-template-columns:320px 1fr;height:calc(100vh - 88px)}
+.left{border-right:0.5px solid var(--border);overflow:auto;background:#fff}
+.left-hdr{padding:12px 16px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:2}
+.left-title{font-size:13px;font-weight:500;color:var(--text-primary)}
+.counts{display:flex;gap:5px}
+.badge{font-size:10px;padding:2px 7px;border-radius:20px}
+.b-green{background:#E6F7EE;color:#1A7A4A}
+.b-red{background:#FDECEA;color:#C0392B}
+.unit-row{padding:8px 12px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;gap:8px;cursor:pointer;transition:background .15s;position:relative;padding-bottom:18px}
+.unit-row:hover{background:var(--surface-0)}
+.unit-row.selected{background:var(--bg-accent)}
+.unit-box{width:52px;height:44px;border-radius:7px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;border:1.5px solid transparent;position:relative}
+.unit-box.active{background:#E6F7EE;border-color:#1A7A4A}
+.unit-box.vacant{background:#FDECEA;border-color:#C0392B}
+.unit-box-num{font-size:13px;font-weight:500;line-height:1}
+.unit-box.active .unit-box-num{color:#1A7A4A}
+.unit-box.vacant .unit-box-num{color:#C0392B}
+.unit-box-lbl{font-size:9px;margin-top:2px;line-height:1}
+.unit-box.active .unit-box-lbl{color:#27AE60}
+.unit-box.vacant .unit-box-lbl{color:#E74C3C}
+.toggle-hint{font-size:9px;color:#aaa;position:absolute;bottom:-14px;white-space:nowrap;display:none}
+.unit-row:hover .toggle-hint{display:block}
+.unit-info{flex:1;min-width:0}
+.unit-tenant{font-size:12px;font-weight:500;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.unit-sub{font-size:11px;color:var(--text-secondary);margin-top:1px}
+.unit-right{text-align:right;flex-shrink:0}
+.chip{display:inline-flex;align-items:center;gap:3px;font-size:10px;padding:2px 7px;border-radius:20px}
+.chip-neutral{background:var(--surface-1);border:0.5px solid var(--border);color:var(--text-secondary)}
+.chip-red{background:#FDECEA;color:#C0392B}
+.chip-blue{background:#E6F0FB;color:#1A4A7A}
+.right{overflow:auto;background:#f4f4f0}
+.right-hdr{padding:14px 18px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:#fff;position:sticky;top:0;z-index:2}
+.right-title{font-size:14px;font-weight:500;color:var(--text-primary)}
+.right-sub{font-size:11px;color:var(--text-secondary)}
+.section{padding:14px 18px;border-bottom:0.5px solid var(--border);background:#fff;margin-bottom:8px}
+.sec-title{font-size:10px;font-weight:500;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px}
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:4px}
+.stat{background:var(--surface-0);border-radius:8px;padding:10px 12px;border:0.5px solid var(--border)}
+.stat-val{font-size:19px;font-weight:500;color:var(--text-primary)}
+.stat-lbl{font-size:10px;color:var(--text-secondary);margin-top:2px}
+.green{color:#1A7A4A}.gold{color:#7A5C00}.red{color:#C0392B}.blue{color:#1A4A7A}
+.hist-table{width:100%;border-collapse:collapse;font-size:12px}
+.hist-table th{text-align:left;padding:6px 8px;font-size:10px;font-weight:500;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.06em;border-bottom:0.5px solid var(--border)}
+.hist-table td{padding:7px 8px;border-bottom:0.5px solid var(--border);color:var(--text-primary)}
+.hist-table tr:last-child td{border-bottom:none}
+.td-r{text-align:right}
+.bar-wrap{display:flex;align-items:center;gap:6px}
+.bar-bg{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.bar-fill{height:100%;border-radius:3px;background:var(--text-secondary)}
+.bar-fill.amber{background:#C9A84C}
+.pct{font-size:11px;font-weight:500;min-width:30px;text-align:right}
+.master-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.mc{background:var(--surface-0);border-radius:8px;padding:10px 12px;border:0.5px solid var(--border)}
+.mc-t{font-size:10px;font-weight:500;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.mc-v{font-size:20px;font-weight:500;color:var(--text-primary)}
+.mc-s{font-size:11px;color:var(--text-secondary);margin-top:2px}
+.comp-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:0.5px solid var(--border);font-size:12px}
+.comp-row:last-child{border:none}
+.comp-lbl{flex:1;color:var(--text-primary)}
+.est-note{background:#E6F0FB;border:0.5px solid #B0C8EE;border-radius:6px;padding:8px 12px;margin-bottom:12px;display:flex;align-items:flex-start;gap:8px;font-size:12px;color:#1A4A7A}
+.toggle-modal{background:var(--surface-0);border:0.5px solid var(--border);border-radius:10px;padding:12px 16px;margin:10px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.tgl-info{font-size:12px;color:var(--text-secondary);flex:1}
+.tgl-info strong{color:var(--text-primary);display:block;margin-bottom:2px}
+.tgl-btn{border:none;border-radius:6px;padding:7px 14px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;white-space:nowrap}
+.tgl-btn.set-active{background:#E6F7EE;color:#1A7A4A;border:1px solid #27AE60}
+.tgl-btn.set-vacant{background:#FDECEA;color:#C0392B;border:1px solid #E74C3C}
+.star-svg{width:22px;height:22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="tbar-l">
+      <svg class="star-svg" viewBox="0 0 22 22" fill="none"><polygon points="11,2 13,8 20,8 14.5,12 16.5,19 11,15 5.5,19 7.5,12 2,8 9,8" fill="none" stroke="#C9A84C" stroke-width="1.3"/></svg>
+      <div><span class="tbar-brand">LoneStar Billing</span><span class="tbar-sub">Landlord Portal</span></div>
+    </div>
+    <div class="tbar-r">
+      <div class="tbar-prop">Maple Creek Apartments</div>
+      <div class="tbar-user"><div class="avatar">JD</div><span>James D.</span></div>
+    </div>
+  </div>
+  <div class="nav">
+    <div class="nav-item active">Dashboard</div>
+    <div class="nav-item">Billing</div>
+    <div class="nav-item">Compliance</div>
+    <div class="nav-item">Reports</div>
+    <div class="nav-item">Settings</div>
+  </div>
+  <div class="body">
+    <div class="left">
+      <div class="left-hdr"><span class="left-title">Units</span><div class="counts" id="counts"></div></div>
+      <div id="unit-list"></div>
+    </div>
+    <div class="right" id="right-panel"></div>
+  </div>
+</div>
+<script>
+var units=[
+  {id:'101',tenant:'Maria Gonzalez',status:'active',util:87.40,balance:0,sqft:820,lease:'Dec 2025',estimated:false},
+  {id:'102',tenant:'James Whitfield',status:'active',util:72.15,balance:0,sqft:750,lease:'Mar 2026',estimated:false},
+  {id:'103',tenant:'',status:'vacant',util:0,balance:0,sqft:810,lease:'',estimated:false},
+  {id:'104',tenant:'Sandra Kim',status:'active',util:94.20,balance:94.20,sqft:920,lease:'Jul 2025',estimated:false},
+  {id:'105',tenant:'Robert Pena',status:'active',util:68.90,balance:0,sqft:750,lease:'Nov 2025',estimated:false},
+  {id:'106',tenant:'',status:'vacant',util:0,balance:0,sqft:780,lease:'',estimated:false},
+  {id:'107',tenant:'Aisha Williams',status:'active',util:101.30,balance:0,sqft:980,lease:'Feb 2026',estimated:false},
+  {id:'108',tenant:'Carlos Moreno',status:'active',util:79.55,balance:0,sqft:820,lease:'Sep 2025',estimated:true},
+  {id:'201',tenant:'Emily Chen',status:'active',util:88.70,balance:88.70,sqft:870,lease:'Jan 2026',estimated:false},
+  {id:'202',tenant:'David Okafor',status:'active',util:71.40,balance:0,sqft:780,lease:'Apr 2026',estimated:false},
+  {id:'203',tenant:'',status:'vacant',util:0,balance:0,sqft:840,lease:'',estimated:false},
+  {id:'204',tenant:'Lisa Tran',status:'active',util:96.80,balance:0,sqft:950,lease:'Aug 2025',estimated:false},
+  {id:'205',tenant:'Michael Torres',status:'active',util:65.20,balance:0,sqft:740,lease:'Jun 2026',estimated:true},
+  {id:'206',tenant:'Rachel Adams',status:'active',util:83.45,balance:0,sqft:840,lease:'Oct 2025',estimated:false},
+  {id:'207',tenant:'',status:'vacant',util:0,balance:0,sqft:870,lease:'',estimated:false},
+  {id:'208',tenant:'Kevin Shah',status:'active',util:91.10,balance:0,sqft:910,lease:'Dec 2025',estimated:false},
+  {id:'301',tenant:'Priya Nair',status:'active',util:108.60,balance:0,sqft:1020,lease:'Mar 2026',estimated:false},
+  {id:'302',tenant:'Jason Brooks',status:'active',util:77.30,balance:0,sqft:810,lease:'Jul 2025',estimated:false},
+  {id:'303',tenant:'Anna Kowalski',status:'active',util:89.90,balance:0,sqft:910,lease:'Nov 2025',estimated:false},
+  {id:'304',tenant:'Marcus Reid',status:'active',util:70.15,balance:0,sqft:750,lease:'Feb 2026',estimated:false},
+  {id:'305',tenant:'Sofia Reyes',status:'active',util:99.40,balance:0,sqft:970,lease:'Jan 2026',estimated:false},
+  {id:'306',tenant:'Thomas Park',status:'active',util:84.70,balance:0,sqft:840,lease:'Sep 2025',estimated:false},
+];
+var hist={'101':[{mo:'Jun 2025',allocated:87.40,collected:87.40,type:'actual'},{mo:'May 2025',allocated:83.80,collected:83.80,type:'actual'},{mo:'Apr 2025',allocated:85.20,collected:85.20,type:'actual'},{mo:'Mar 2025',allocated:83.10,collected:83.10,type:'actual'}],'104':[{mo:'Jun 2025',allocated:94.20,collected:0,type:'actual'},{mo:'May 2025',allocated:90.80,collected:90.80,type:'actual'},{mo:'Apr 2025',allocated:92.20,collected:92.20,type:'actual'},{mo:'Mar 2025',allocated:89.40,collected:89.40,type:'actual'}],'108':[{mo:'Jun 2025',allocated:79.55,collected:0,type:'estimated'},{mo:'May 2025',allocated:78.20,collected:78.20,type:'actual'},{mo:'Apr 2025',allocated:80.10,collected:80.10,type:'actual'},{mo:'Mar 2025',allocated:77.90,collected:77.90,type:'actual'}],'201':[{mo:'Jun 2025',allocated:88.70,collected:0,type:'actual'},{mo:'May 2025',allocated:87.30,collected:87.30,type:'actual'},{mo:'Apr 2025',allocated:85.90,collected:85.90,type:'actual'},{mo:'Mar 2025',allocated:84.50,collected:84.50,type:'actual'}],'205':[{mo:'Jun 2025',allocated:65.20,collected:0,type:'estimated'},{mo:'May 2025',allocated:64.10,collected:64.10,type:'actual'},{mo:'Apr 2025',allocated:63.80,collected:63.80,type:'actual'},{mo:'Mar 2025',allocated:62.50,collected:62.50,type:'actual'}]};
+var masterHist=[{mo:'Jun 2025',bill:4850,common:485,billable:4365,collected:4182.60,pct:95.8},{mo:'May 2025',bill:4620,common:462,billable:4158,collected:4158,pct:100},{mo:'Apr 2025',bill:4700,common:470,billable:4230,collected:4189.70,pct:99.0},{mo:'Mar 2025',bill:4540,common:454,billable:4086,collected:4086,pct:100},{mo:'Feb 2025',bill:4810,common:481,billable:4329,collected:4286.71,pct:99.0},{mo:'Jan 2025',bill:4390,common:439,billable:3951,collected:3911.49,pct:99.0}];
+var selected=null;
+function fmt(n){return'$'+n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');}
+function getCounts(){var a=units.filter(function(u){return u.status==='active';}).length;return{active:a,vacant:units.length-a};}
+function renderCounts(){var c=getCounts();document.getElementById('counts').innerHTML='<span class="badge b-green">'+c.active+' active</span><span class="badge b-red">'+c.vacant+' vacant</span>';}
+function getStatusChip(u){if(u.status==='vacant')return'<span class="chip chip-neutral">Vacant</span>';if(u.estimated)return'<span class="chip chip-blue">Est.</span>';if(u.balance>0)return'<span class="chip chip-red">Past due</span>';return'<span class="chip chip-neutral">Paid</span>';}
+function toggleStatus(id,e){e.stopPropagation();var u=units.find(function(x){return x.id===id;});if(!u)return;u.status=u.status==='active'?'vacant':'active';if(u.status==='vacant'){u.tenant='';u.estimated=false;u.balance=0;u.util=0;}renderCounts();renderList();if(selected===id)renderRight(id);}
+function renderList(){var html='';units.forEach(function(u){var active=u.status==='active';var sel=selected===u.id?' selected':'';html+='<div class="unit-row'+sel+'" onclick="selectUnit(\''+u.id+'\')">';html+='<div class="unit-box '+(active?'active':'vacant')+'" onclick="toggleStatus(\''+u.id+'\',event)">';html+='<div class="unit-box-num">'+u.id+'</div><div class="unit-box-lbl">'+(active?'Active':'Vacant')+'</div>';html+='<span class="toggle-hint">'+(active?'Set vacant':'Set active')+'</span></div>';html+='<div class="unit-info"><div class="unit-tenant">'+(active&&u.tenant?u.tenant:'No tenant')+'</div><div class="unit-sub">'+(active&&u.util?fmt(u.util)+' this month':'—')+'</div></div>';html+='<div class="unit-right">'+getStatusChip(u)+'</div></div>';});document.getElementById('unit-list').innerHTML=html;}
+function selectUnit(id){selected=id;renderList();renderRight(id);}
+function renderRight(id){var u=units.find(function(x){return x.id===id;});var el=document.getElementById('right-panel');if(!u){el.innerHTML=renderMaster();return;}var active=u.status==='active';var h=hist[id]||null;var html='<div class="right-hdr"><div><div class="right-title">Unit '+u.id+(active&&u.tenant?' — '+u.tenant:active?' — Active':' — Vacant')+'</div><div class="right-sub">'+(active?u.sqft+' sq ft · Lease ends '+u.lease:'No current tenant · '+u.sqft+' sq ft')+'</div></div>';var chips='';if(active&&u.estimated)chips='<span class="chip chip-blue">Estimated bill</span>';else if(active&&u.balance>0)chips='<span class="chip chip-red">'+fmt(u.balance)+' due</span>';html+=chips+'</div>';html+='<div class="toggle-modal"><div class="tgl-info"><strong>Unit status</strong>Currently <strong>'+(active?'active — billing on':'vacant — billing paused')+'</strong></div><button class="tgl-btn '+(active?'set-vacant':'set-active')+'" onclick="toggleStatus(\''+u.id+'\',event)">'+(active?'Set vacant':'Set active')+'</button></div>';if(active){html+='<div class="section">';if(u.estimated)html+='<div class="est-note"><strong>Estimated bill issued this period</strong> — meter could not be read. Adjustment will appear on the next billing cycle.</div>';html+='<div class="sec-title">Current month</div><div class="stat-row">';html+='<div class="stat"><div class="stat-val '+(u.estimated?'blue':'')+'">'+fmt(u.util)+'</div><div class="stat-lbl">'+(u.estimated?'Est. charge':'Utility charge')+'</div></div>';html+='<div class="stat"><div class="stat-val '+(u.balance>0?'red':u.estimated?'blue':'')+'">'+( u.estimated?'Pending':u.balance>0?fmt(u.balance):'Paid')+'</div><div class="stat-lbl">Balance</div></div>';html+='<div class="stat"><div class="stat-val">'+u.sqft+'</div><div class="stat-lbl">Sq ft</div></div>';html+='<div class="stat"><div class="stat-val">RUBS</div><div class="stat-lbl">Billing method</div></div>';html+='</div></div>';html+='<div class="section"><div class="sec-title">Tenant billing history</div>';var rows=h||['Jun 2025','May 2025','Apr 2025','Mar 2025'].map(function(mo){var a=parseFloat((u.util*0.97).toFixed(2));return{mo:mo,allocated:a,collected:a,type:'actual'};});html+='<table class="hist-table"><thead><tr><th>Month</th><th>Type</th><th>Allocated</th><th>Collected</th><th>Status</th><th>Recovery</th></tr></thead><tbody>';rows.forEach(function(r){var est=r.type==='estimated';var paid=!est&&r.collected>=r.allocated;var pct=est?0:r.collected>=r.allocated?100:Math.round((r.collected/r.allocated)*100);html+='<tr><td>'+r.mo+'</td><td>'+(est?'<span class="chip chip-blue">Est.</span>':'<span style="font-size:11px;color:#888">Actual</span>')+'</td><td class="td-r">'+fmt(r.allocated)+'</td><td class="td-r">'+(est?'<span style="color:#aaa">Pending</span>':fmt(r.collected))+'</td><td>'+(est?'<span class="chip chip-blue">Pending</span>':paid?'<span class="chip chip-neutral">Paid</span>':'<span class="chip chip-red">Unpaid</span>')+'</td><td class="td-r">'+(est?'—':'<div class="bar-wrap"><div class="bar-bg"><div class="bar-fill '+(pct<100?'amber':'')+'" style="width:'+pct+'%"></div></div><span class="pct">'+pct+'%</span></div>')+'</td></tr>';});html+='</tbody></table></div>';}else{html+='<div class="section"><div class="sec-title">Unit details</div><div class="stat-row"><div class="stat"><div class="stat-val gold">Vacant</div><div class="stat-lbl">Status</div></div><div class="stat"><div class="stat-val">'+u.sqft+'</div><div class="stat-lbl">Sq ft</div></div><div class="stat"><div class="stat-val" style="color:#aaa">—</div><div class="stat-lbl">Utility charge</div></div><div class="stat"><div class="stat-val" style="color:#aaa">—</div><div class="stat-lbl">Balance</div></div></div><p style="font-size:13px;color:#666;margin-top:4px">Billing is paused. Utility charges will resume at next lease signing.</p></div>';}html+=renderMasterSection();el.innerHTML=html;}
+function renderMasterSection(){var html='<div class="section"><div class="sec-title">Master property utility history</div><div class="master-grid">';[{t:'Total billed YTD',v:'$27,910',s:'Jan – Jun 2025'},{t:'Avg recapture rate',v:'98.8%',s:'Last 6 months'},{t:'Common area deducted',v:'$2,791',s:'10% of master bill'},{t:'Current outstanding',v:'$182.90',s:'Units 104, 201'}].forEach(function(c){html+='<div class="mc"><div class="mc-t">'+c.t+'</div><div class="mc-v">'+c.v+'</div><div class="mc-s">'+c.s+'</div></div>';});html+='</div><table class="hist-table" style="margin-top:12px"><thead><tr><th>Month</th><th>Master bill</th><th>Common area</th><th>Billable</th><th>Collected</th><th>Recapture</th></tr></thead><tbody>';masterHist.forEach(function(r){html+='<tr><td>'+r.mo+'</td><td class="td-r">'+fmt(r.bill)+'</td><td class="td-r" style="color:#888">'+fmt(r.common)+'</td><td class="td-r">'+fmt(r.billable)+'</td><td class="td-r">'+fmt(r.collected)+'</td><td class="td-r"><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill '+(r.pct<99?'amber':'')+'" style="width:'+r.pct+'%"></div></div><span class="pct">'+r.pct+'%</span></div></td></tr>';});html+='</tbody></table></div><div class="section"><div class="sec-title">PUC compliance status</div>';[{icon:'ti-circle-check',l:'PUC registration active',s:'Compliant',ok:true},{icon:'ti-circle-check',l:'RUBS formula — square footage + occupancy',s:'Compliant',ok:true},{icon:'ti-circle-check',l:'Lease addendums on file',s:'Compliant',ok:true},{icon:'ti-circle-check',l:'Common area deduction (10%)',s:'Compliant',ok:true},{icon:'ti-circle-check',l:'16-day billing window',s:'Compliant',ok:true},{icon:'ti-alert-triangle',l:'Late fee cap — 2 units flagged over 5%',s:'Review needed',ok:false}].forEach(function(item){html+='<div class="comp-row"><i class="ti '+item.icon+'" style="font-size:14px;width:20px;text-align:center;color:'+(item.ok?'#888':'#E67E22')+'"></i><span class="comp-lbl">'+item.l+'</span><span style="font-size:11px;font-weight:500;color:'+(item.ok?'#888':'#7A5C00')+'">'+item.s+'</span></div>';});html+='</div>';return html;}
+function renderMaster(){return'<div class="right-hdr"><div class="right-title">Property overview</div><div class="right-sub">Maple Creek Apartments</div></div>'+renderMasterSection();}
+renderCounts();renderList();document.getElementById('right-panel').innerHTML=renderMaster();
+</script>
+</body>
+</html>
